@@ -1,0 +1,90 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { IMessage } from './Models/Message';
+
+addListeners();
+
+function addListeners() {
+    function _addListener<T>(
+        _name: string,
+        callback: (
+            message: IMessage<T>,
+            sender: chrome.runtime.MessageSender,
+            sendResponse: (response?: unknown) => void
+        ) => void
+    ) {
+        chrome.runtime.onMessage.addListener(function (message: IMessage<T>, sender, sendResponse) {
+            if (!message || message.Name !== _name) return;
+            console.debug('Message received from Content Script: %o', message);
+
+            callback(message, sender, sendResponse);
+            return true;
+        });
+    }
+
+    // _addListener<string>('LoadPlaylists', async (message, sender, sendResponse) => {
+    //     const urlParams = await UrlHelper.PrepareUrlParams(message.Data);
+    //     await PlaylistHelper.LoadPlayLists(urlParams);
+
+    //     if (!chrome.tabs.onRemoved.hasListener(resetTabId)) {
+    //         chrome.tabs.onRemoved.addListener(resetTabId);
+    //     }
+
+    //     function resetTabId(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
+    //         if (sender.tab?.id && _tabId === sender.tab.id) {
+    //             console.log('Tab %d CLOSED.', _tabId);
+    //             UrlHelper.RemoveFromStorage();
+    //             chrome.tabs.onRemoved.removeListener(resetTabId);
+    //         }
+    //     }
+
+    //     sendResponse();
+    // });
+    // _addListener<{ index: number; UIClick: boolean }>(
+    //     'NextSongToBackground',
+    //     (message, sender, sendResponse) => {
+    //         let tabId: number = chrome.tabs.TAB_ID_NONE;
+    //         if (sender.tab && sender.tab.url) {
+    //             if (sender.tab.url.indexOf('/embed/') > 0) {
+    //                 tabId = sender.tab.openerTabId ?? tabId;
+    //             } else {
+    //                 tabId = sender.tab.id ?? tabId;
+    //             }
+    //         }
+
+    //         NextSong(tabId, message.Data.index, message.Data.UIClick);
+    //         sendResponse();
+    //     }
+    // );
+    // _addListener<string>('CheckList', async (message, sender, sendResponse) => {
+    //     sendResponse(await PlaylistHelper.CheckList(message.Data));
+    // });
+    // _addListener<string>('GetNowPlaying', async (message, sender, sendResponse) => {
+    //     const myPlaylist: ISong[] = (await chrome.storage.local.get('myPlaylist')).myPlaylist;
+    //     sendResponse(myPlaylist[await PlaylistHelper.CheckList(message.Data)]);
+    // });
+    // _addListener<boolean>('FetchPlaylists', async (message, sender, sendResponse) => {
+    //     sendResponse(await PlaylistHelper.fetchPlaylists());
+    // });
+    // _addListener<boolean>('ReloadLastSong', async (message, sender, sendResponse) => {
+    //     const url = `https://www.youtube.com/watch?${await UrlHelper.GetFromStorage('')}`;
+    //     console.log('Redirect to last song: %s', url);
+
+    //     let tabId: number = chrome.tabs.TAB_ID_NONE;
+    //     if (sender.tab && sender.tab.url) {
+    //         if (sender.tab.url.indexOf('/embed/') > 0) {
+    //             tabId = sender.tab.openerTabId ?? tabId;
+    //         } else {
+    //             tabId = sender.tab.id ?? tabId;
+    //         }
+    //     }
+    //     if (tabId < 0) {
+    //         console.warn('TabId not defined!');
+    //         tabId = (await chrome.tabs.create({})).id ?? -1;
+
+    //         if (tabId < 0) return;
+    //     }
+    //     chrome.tabs.update(tabId, { url: url });
+    //     sendResponse();
+    // });
+}

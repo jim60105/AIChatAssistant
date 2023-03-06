@@ -1,0 +1,12 @@
+body {
+    min-width: 270px;
+}
+
+.list-group-item.disabled,
+.list-group-item:disabled {
+    background-color: lightgray;
+}
+
+.nav {
+    font-size: small;
+}

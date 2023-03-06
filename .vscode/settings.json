@@ -1,0 +1,41 @@
+{
+    "cSpell.words": [
+        "Aruma",
+        "assjs",
+        "btns",
+        "IROA",
+        "Kakeru",
+        "Matori",
+        "Meiryo",
+        "Minai",
+        "MPEGTS",
+        "nexttrack",
+        "notsongs",
+        "Onedrive",
+        "playlistexclude",
+        "playlistinclude",
+        "Quon",
+        "startplaylist",
+        "Suda",
+        "Tama",
+        "videojs",
+        "webvtt",
+        "Yoruka"
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.formatOnSave": true
+}
