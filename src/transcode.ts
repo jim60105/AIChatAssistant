@@ -1,16 +1,34 @@
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-const ffmpeg = createFFmpeg({
-    log: true,
-    corePath: chrome.runtime.getURL('vendor/ffmpeg-core.js'),
-});
+/* eslint-disable @typescript-eslint/no-explicit-any */
+declare const FFmpeg: any;
 
-const transcode = async (file: File) => {
-    const name = 'video';
-    if (!ffmpeg.isLoaded()) {
-        await ffmpeg.load();
+export class ffmpeg {
+    private _ffmpeg: any;
+    constructor() {
+        const { createFFmpeg } = FFmpeg;
+        this._ffmpeg = createFFmpeg({
+            log: true,
+            corePath: chrome.runtime.getURL('assets/ffmpeg/ffmpeg-core.js'),
+            wasmPath: chrome.runtime.getURL('assets/ffmpeg/ffmpeg-core.wasm'),
+            workerPath: chrome.runtime.getURL('assets/ffmpeg/ffmpeg-core.worker.js'),
+        });
     }
 
-    ffmpeg.FS('writeFile', name, await fetchFile(file));
-    await ffmpeg.run('-i', name, 'output.mp4');
-    const data = ffmpeg.FS('readFile', 'output.mp4');
-};
+    async downloadLastMinuteFromM3u8(m3u8Url: string) {
+        if (!this._ffmpeg.isLoaded()) {
+            await this._ffmpeg.load();
+        }
+        await this._ffmpeg.run(
+            '-i',
+            m3u8Url,
+            '-map',
+            '0:a:0',
+            '-c',
+            'copy',
+            '-f',
+            'segment',
+            '-segment_time',
+            '60',
+            'audio.mp4'
+        );
+    }
+}

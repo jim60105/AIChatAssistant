@@ -1,6 +1,9 @@
+import { switchMap, tap } from 'rxjs';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { from } from 'rxjs';
 import { IMessage } from './Models/Message';
+import { ffmpeg } from './transcode';
 
 addListeners();
 
@@ -22,24 +25,36 @@ function addListeners() {
         });
     }
 
-    // _addListener<string>('LoadPlaylists', async (message, sender, sendResponse) => {
-    //     const urlParams = await UrlHelper.PrepareUrlParams(message.Data);
-    //     await PlaylistHelper.LoadPlayLists(urlParams);
+    //     _addListener<string>('click', async (message, sender, sendResponse) => {
+    //         const scriptUrl = chrome.extension.getURL('assets/ffmpeg/ffmpeg.min.js');
 
-    //     if (!chrome.tabs.onRemoved.hasListener(resetTabId)) {
-    //         chrome.tabs.onRemoved.addListener(resetTabId);
-    //     }
+    // fetch(scriptUrl)
+    //   .then(response => response.text())
+    //   .then(script => eval(script));
 
-    //     function resetTabId(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-    //         if (sender.tab?.id && _tabId === sender.tab.id) {
-    //             console.log('Tab %d CLOSED.', _tabId);
-    //             UrlHelper.RemoveFromStorage();
-    //             chrome.tabs.onRemoved.removeListener(resetTabId);
-    //         }
-    //     }
+    //         from(fetch(scriptUrl))
+    //             .pipe(
+    //                 switchMap((response) => response.text()),
+    //                 tap((response) => {
+    //                     eval(response);
+    //                 }),
+    //                 switchMap(() => from(new ffmpeg().downloadLastMinuteFromM3u8(message.Data)))
+    //             ).subscribe();
+    //             // .pipe(
+    //             //     switchMap((response) => response.text()),
+    //             //     map((response) => {
+    //             //         console.log('Get video page');
+    //             //         videoPageHtml = response;
+    //             //         const m3u8Url = /([^"]+?\.m3u8)"/.exec(videoPageHtml)?.[1] ?? '';
+    //             //         console.log(m3u8Url);
+    //             //         return m3u8Url;
+    //             //     }),
+    //             //     switchMap((m3u8Url: string) => from(downloadLastMinuteFromM3u8(m3u8Url)))
+    //             // )
 
-    //     sendResponse();
-    // });
+    //         sendResponse();
+    //     });
+
     // _addListener<{ index: number; UIClick: boolean }>(
     //     'NextSongToBackground',
     //     (message, sender, sendResponse) => {

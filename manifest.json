@@ -10,7 +10,8 @@
         "unlimitedStorage"
     ],
     "host_permissions": [
-        "https://api.openai.com/*"
+        "https://api.openai.com/*",
+        "https://www.youtube.com/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -39,6 +40,7 @@
             "run_at": "document_start",
             "all_frames": true,
             "js": [
+                "assets/ffmpeg/ffmpeg.min.js",
                 "contentScript.js"
             ],
             "css": [
@@ -49,7 +51,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "contentScript.html"
+                "contentScript.html",
+                "assets/*"
             ],
             "matches": [
                 "https://www.youtube.com/*",

@@ -76,6 +76,18 @@ module.exports = {
                 { from: 'node_modules/bootstrap-icons/font/fonts', to: 'assets/bootstrap/fonts' },
                 { from: 'node_modules/bootstrap-icons/LICENSE.md', to: 'assets/bootstrap/' },
 
+                { from: 'node_modules/@ffmpeg/ffmpeg/dist/ffmpeg.min.js', to: 'assets/ffmpeg/' },
+                {
+                    from: 'node_modules/@ffmpeg/ffmpeg/dist/ffmpeg.min.js.map',
+                    to: 'assets/ffmpeg/',
+                },
+                { from: 'node_modules/@ffmpeg/core/dist/ffmpeg-core.js', to: 'assets/ffmpeg/' },
+                { from: 'node_modules/@ffmpeg/core/dist/ffmpeg-core.wasm', to: 'assets/ffmpeg/' },
+                {
+                    from: 'node_modules/@ffmpeg/core/dist/ffmpeg-core.worker.js',
+                    to: 'assets/ffmpeg/',
+                },
+
                 { from: 'manifest.json', to: '.' },
                 {
                     from: 'icon',
