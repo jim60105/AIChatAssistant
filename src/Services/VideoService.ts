@@ -1,5 +1,5 @@
 import { muxjs } from 'muxjs';
-import { switchMap, map, from, last, Subject, Observable, concatMap } from 'rxjs';
+import { switchMap, map, from, last, Subject, Observable, concatMap, take } from 'rxjs';
 
 declare global {
     interface Window {
@@ -13,6 +13,7 @@ export class VideoService {
         return from(m3u8Urls).pipe(
             switchMap((url) => this.extractSegmentsUrls(url)),
             map((urls) => segmentUrls.push(...urls)),
+            take(40),
             last(),
             switchMap(() => this.combineSegmentsToMp4(segmentUrls))
         );
@@ -22,18 +23,34 @@ export class VideoService {
         const m3u8Response = await fetch(m3u8Url);
         const m3u8Text = await m3u8Response.text();
 
-        // Get the last segment url (best quality)
+        // Get the first m3u8 url (lowest quality)
         const url = m3u8Text
             .split('\n')
             .filter((line) => line.trim().length > 0 && !line.startsWith('#'))
-            .at(-1);
+            .at(1);
 
         if (!url) throw new Error('No segment found in m3u8 file.');
 
         const response = await fetch(url);
         const text = await response.text();
 
-        return text.split('\n').filter((line) => line.trim().length > 0 && !line.startsWith('#'));
+        const lastUrl = text
+            .split('\n')
+            .filter((line) => line.trim().length > 0 && !line.startsWith('#'))[0];
+        const currentSeq = +(/sq\/(\d+)\//.exec(lastUrl)?.[1] ?? 0);
+        let startSeq = currentSeq - 60;
+        if (startSeq < 0) startSeq = 0;
+
+        const segmentUrls: string[] = [];
+        for (let i = startSeq; i < currentSeq; i++) {
+            segmentUrls.push(lastUrl.replace(/sq\/\d+\//, `sq/${i}/`));
+        }
+
+        console.log('Get Segment Urls...');
+        segmentUrls.forEach((element) => {
+            console.debug(element);
+        });
+        return segmentUrls;
     }
 
     // Modify from https://github.com/videojs/mux.js#readme
