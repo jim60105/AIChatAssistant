@@ -41,7 +41,7 @@
             "run_at": "document_start",
             "all_frames": true,
             "js": [
-                "assets/ffmpeg/ffmpeg.min.js",
+                "assets/mux.min.js",
                 "contentScript.js"
             ],
             "css": [

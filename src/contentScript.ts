@@ -1,6 +1,6 @@
 import './contentScript.scss';
-import { IYtInitialData } from './Models/YtInitialData';
 import { from, map, switchMap } from 'rxjs';
+import { IYtInitialData } from './Models/YtInitialData';
 import { VideoService } from './Services/VideoService';
 
 (async function () {
@@ -49,9 +49,7 @@ import { VideoService } from './Services/VideoService';
                         console.debug(m3u8Url);
                         return m3u8Url;
                     }),
-                    switchMap((m3u8Url: string) =>
-                        from(videoService.downloadLastMinuteFromM3u8(m3u8Url))
-                    )
+                    switchMap((m3u8Url: string) => from(videoService.downloadAudio(m3u8Url)))
                 )
                 .subscribe();
             // chrome.runtime.sendMessage(new Message('click', videoId));
