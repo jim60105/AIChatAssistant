@@ -1,4 +1,3 @@
-import './contentScript.scss';
 import { VideoService } from './Services/VideoService';
 import { map, from, switchMap } from 'rxjs';
 import { IYtInitialData } from './Models/YtInitialData';

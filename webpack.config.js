@@ -12,8 +12,10 @@ module.exports = {
     // experiments: { topLevelAwait: true },
     entry: {
         background: path.resolve(__dirname, 'src', 'background.ts'),
-        contentScript: path.resolve(__dirname, 'src', 'contentScript.scss'),
-        contentScript: path.resolve(__dirname, 'src', 'contentScript.ts'),
+        contentScript: [
+            path.resolve(__dirname, 'src', 'contentScript.ts'),
+            path.resolve(__dirname, 'src', 'contentScript.scss'),
+        ],
         popup: path.resolve(__dirname, 'src', 'popup.ts'),
     },
     output: {
