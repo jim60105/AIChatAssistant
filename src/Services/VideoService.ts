@@ -8,25 +8,14 @@ declare global {
 }
 
 export class VideoService {
-    async downloadAudio(m3u8Url: string): Promise<void> {
-        const segmentUrls = await this.extractSegmentsUrls(m3u8Url);
-
-        // console.log(`Downloading ${segmentUrls.length} segments...`);
-        this.combineSegmentsToMp4(segmentUrls)
-            .pipe(last())
-            .subscribe((array) => {
-                const combinedBlob = new Blob(array, { type: 'video/mp4' });
-                const combinedUrl = URL.createObjectURL(combinedBlob);
-
-                // Download segments (just for testing)
-                const a = document.createElement('a');
-                a.href = combinedUrl;
-                a.download = 'merged-video.mp4';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(combinedUrl);
-            });
+    public downloadAudio(m3u8Urls: string[]): Observable<ArrayBuffer[]> {
+        const segmentUrls: string[] = [];
+        return from(m3u8Urls).pipe(
+            switchMap((url) => this.extractSegmentsUrls(url)),
+            map((urls) => segmentUrls.push(...urls)),
+            last(),
+            switchMap(() => this.combineSegmentsToMp4(segmentUrls))
+        );
     }
 
     private async extractSegmentsUrls(m3u8Url: string): Promise<string[]> {
@@ -70,7 +59,7 @@ export class VideoService {
             remux: false,
         });
         // First segment
-        transmuxer.on('data', (segment) => {
+        transmuxer.on('data', (segment: any) => {
             if (segment.type !== 'audio') return;
 
             const data = new Uint8Array(segment.initSegment.byteLength + segment.data.byteLength);
@@ -88,14 +77,14 @@ export class VideoService {
                     transmuxer.push(new Uint8Array(response));
                     transmuxer.flush();
                     transmuxer.off('data');
-                    transmuxer.on('data', (segment) => {
+                    transmuxer.on('data', (segment: any) => {
                         if (segment.type !== 'audio') return;
-                        sub.next(new Uint8Array(segment.data));
+                        sub.next(segment.data);
                     });
                 }),
                 switchMap(() => from(segmentUrls)),
-                concatMap((url) => from(fetch(url))),
-                concatMap((response) => from(response.arrayBuffer())),
+                concatMap((url) => fetch(url)),
+                switchMap((response) => response.arrayBuffer()),
                 map((response) => {
                     transmuxer.push(new Uint8Array(response));
                     transmuxer.flush();
