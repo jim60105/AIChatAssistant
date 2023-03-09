@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "cbuf",
-        "liveinstantly"
+        "davinci",
+        "liveinstantly",
+        "openai"
     ],
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

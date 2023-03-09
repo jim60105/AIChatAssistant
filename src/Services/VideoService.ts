@@ -30,13 +30,13 @@ export class VideoService {
 
         const sqString = representation.SegmentList.SegmentURL.at(-1)?.['@media'] ?? 'sq/0/';
         const currentSeq = Number(/sq\/(\d+)\//.exec(sqString)?.[1]);
-        const earliestSeq = manifest.MPD['@yt:earliestMediaSequence'];
+        // const earliestSeq = manifest.MPD['@yt:earliestMediaSequence'];
 
         let lengthEverySegment = Number(/dur\/(\d+(\.\d+)?)/.exec(baseUrl)?.[1]);
         if (!lengthEverySegment || lengthEverySegment === 0) lengthEverySegment = 5;
 
         const count = Math.ceil(60 / lengthEverySegment); // 60s
-        const startSeq = Math.max(currentSeq - count, 0, earliestSeq);
+        const startSeq = Math.max(currentSeq - count, 0);
         return range(startSeq, currentSeq - startSeq).pipe(map((i) => `${baseUrl}sq/${i}/`));
     }
 }
