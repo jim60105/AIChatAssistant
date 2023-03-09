@@ -1,78 +1,10 @@
 {
     "extName": {
-        "message": "AIChatAssistant",
+        "message": "AIチャットアシスタント (for Youtube Live Stream)",
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "切り抜きのプレイリスト機能です。Youtube/Onedrive/GoogleDrive/TwitCastingを「開始時間～終了時間」再生する。Vtuberの歌枠を聴くためのツールです。",
+        "message": "OpenAIを使用して、Youtubeのチャットルームで国境を越えたコミュニケーションを実現することができます！YoutubeライブをOpenAIに送信し、智能翻訳で要約を行い、即時返信を可能にすることで、チャットルームのインタラクションをより楽しく、スムーズにします！",
         "description": "Description of the extension"
-    },
-    "shuffle": {
-        "message": "シャッフル再生",
-        "description": "Toggle Shuffle"
-    },
-    "play": {
-        "message": "全ての曲を再生する",
-        "description": "Play all the songs."
-    },
-    "edit": {
-        "message": "エディット",
-        "description": "Edit Button"
-    },
-    "editDone": {
-        "message": "セーブ",
-        "description": "Save Button"
-    },
-    "playlistClickHint": {
-        "message": "このプレイリストを再生する!",
-        "description": "Click on the list item to start the Playlist."
-    },
-    "singerClickHint": {
-        "message": "彼/彼女の歌を再生する!",
-        "description": "Click on the list item to play his song!"
-    },
-    "plTitle": {
-        "message": "クリッププレイリスト",
-        "description": "Title of the playlist container sidebar."
-    },
-    "widthHelp":{
-        "message": "数値(px)、またはcss値の文字列を指定します",
-        "description": "Can be a plain number in px or a css value string."
-    },
-    "heightHelp":{
-        "message": "数値(px)、またはcss値の文字列を指定します",
-        "description": "Can be a plain number in px or a css value string."
-    },
-    "playlistSourceHelp":{
-        "message": "このフィールドをクリアすると、デフォルトのソースを使用します",
-        "description": "Clear this field to use the default source."
-    },
-    "UIWidth": {
-        "message": "プレイリストUIの幅",
-        "description": "Playlist UI Width"
-    },
-    "UIHeight": {
-        "message": "プレイリストUIの高さ",
-        "description": "Playlist UI Height"
-    },
-    "baseUrlTitle": {
-        "message": "プレイリストのソース",
-        "description": "Playlist Source Base Url"
-    },
-    "UseAutoSubLabel": {
-        "message": "自動歌詞機能を有効にする",
-        "description": "Enable automatic lyrics feature."
-    },
-    "UseAutoSubHelp": {
-        "message": "この歌詞は、インターネットから自動的に検索されたものです<br />ミスマッチや不正確なタイムスタンプがある場合は、<a href='https://github.com/AIChatAssistant/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >こちら</a >にご報告ください",
-        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/AIChatAssistant/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
-    },
-    "submitForm": {
-        "message": "セーブ",
-        "description": "Save Button"
-    },
-    "savedToast": {
-        "message": "保存しました<br>次回のロード時に有効になります",
-        "description": "Saved Toast"
     }
 }

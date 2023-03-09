@@ -14,29 +14,30 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
         throw new Error('API Key is not set');
     }
 
-    // Wait for the page to load
-    document.addEventListener('DOMContentLoaded', () => {
-        if (pathname.startsWith('/live_chat')) {
-            addOpenButton();
-            addContainer();
-        }
-    });
+    if (pathname.startsWith('/live_chat')) {
+        addOpenButton();
+        addContainer();
+    }
 
     function addOpenButton() {
-        const container = document.getElementById('message-buttons');
+        const container = document.getElementById('picker-buttons');
 
         if (!container) return;
-        document.getElementById('AIChatAssistant_button')?.remove();
-        container.insertAdjacentHTML(
-            'afterbegin',
-            '<button id="AIChatAssistant_openButton">AI</button>'
-        );
 
-        const AIChatAssistant_openButton = document.getElementById(
-            'AIChatAssistant_openButton'
-        ) as HTMLButtonElement;
+        from(fetch(chrome.runtime.getURL('/contentScript_button.html')))
+            .pipe(
+                switchMap((response) => response.text()),
+                map((response) => {
+                    container.insertAdjacentHTML('beforeend', response);
 
-        AIChatAssistant_openButton.addEventListener('click', openButtonClick);
+                    const AIChatAssistant_openButton = document.getElementById(
+                        'AIChatAssistant_openButton'
+                    ) as HTMLButtonElement;
+
+                    AIChatAssistant_openButton.addEventListener('click', openButtonClick);
+                })
+            )
+            .subscribe();
     }
 
     let isOpen = false;

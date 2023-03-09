@@ -1,78 +1,10 @@
 {
     "extName": {
-        "message": "AIChatAssistant",
+        "message": "智慧摘要聊天助手 (for Youtube Live Stream)",
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "這是截選播放清單功能，在Youtube/Onedrive/GoogleDrive/TwitCasting上直接播放「起始~結束時間」影片片段。此工具專門設計來聽Vtuber的歌枠。",
+        "message": "讓OpenAI為Youtube聊天室帶來無國界交流體驗！將Youtube直播傳送至OpenAI，智慧翻譯摘要並提供即時回覆選項，讓你的聊天室互動更有趣、更暢通！",
         "description": "Description of the extension"
-    },
-    "shuffle": {
-        "message": "切換隨機播放",
-        "description": "Toggle Shuffle"
-    },
-    "play": {
-        "message": "播放所有歌曲",
-        "description": "Play all the songs."
-    },
-    "edit": {
-        "message": "編輯",
-        "description": "Edit Button"
-    },
-    "editDone": {
-        "message": "儲存",
-        "description": "Save Button"
-    },
-    "playlistClickHint": {
-        "message": "播放此播放清單!",
-        "description": "Click on the list item to start the Playlist."
-    },
-    "singerClickHint": {
-        "message": "播放他的歌曲!",
-        "description": "Click on the list item to play his song!"
-    },
-    "plTitle":{
-        "message": "截選播放清單",
-        "description": "Title of the playlist container sidebar."
-    },
-    "widthHelp":{
-        "message": "可以填入普通數字(px)或css字串",
-        "description": "Can be a plain number in px or a css value string."
-    },
-    "heightHelp":{
-        "message": "可以填入普通數字(px)或css字串",
-        "description": "Can be a plain number in px or a css value string."
-    },
-    "playlistSourceHelp":{
-        "message": "填入空白以恢復為預設來源",
-        "description": "Clear this field to use the default source."
-    },
-    "UIWidth": {
-        "message": "播放清單UI寬度",
-        "description": "Playlist UI Width"
-    },
-    "UIHeight": {
-        "message": "播放清單UI高度",
-        "description": "Playlist UI Height"
-    },
-    "baseUrlTitle": {
-        "message": "播放清單來源",
-        "description": "Playlist Source Base Url"
-    },
-    "UseAutoSubLabel": {
-        "message": "啟用自動歌詞功能",
-        "description": "Enable automatic lyrics feature."
-    },
-    "UseAutoSubHelp": {
-        "message": "這些歌詞是自動化由網路搜尋而來。<br />如果發生錯誤或是時間不正確，請<a href='https://github.com/AIChatAssistant/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >在此</a >回報。",
-        "description": "These lyrics are automatically searched from the internet.<br />If there is a mismatch or incorrect timestamp, please report it <a href='https://github.com/AIChatAssistant/Lyrics/issues/new/choose' target='_blank' rel='noopener noreferrer' >here</a >."
-    },
-    "submitForm": {
-        "message": "儲存",
-        "description": "Save Button"
-    },
-    "savedToast": {
-        "message": "已儲存<br>將會在下次載入時生效",
-        "description": "Saved Toast"
     }
 }

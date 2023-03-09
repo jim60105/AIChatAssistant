@@ -38,7 +38,7 @@
                 "https://www.youtube.com/*",
                 "https://youtube.googleapis.com/*"
             ],
-            "run_at": "document_start",
+            "run_at": "document_idle",
             "all_frames": true,
             "js": [
                 "contentScript.js"
@@ -52,6 +52,7 @@
         {
             "resources": [
                 "contentScript.html",
+                "contentScript_button.html",
                 "assets/*"
             ],
             "matches": [
