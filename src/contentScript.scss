@@ -1,0 +1,18 @@
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+#AIChatAssistant_container {
+    height: 0%;
+    background-color: darkgray;
+    overflow-y: hidden;
+
+    #AIChatAssistant_summary {
+        max-height: 50%;
+        overflow-y: scroll;
+    }
+}
+
+#content {
+    ytd-live-chat-frame#chat {
+        height: calc(100vh - 100px);
+    }
+}

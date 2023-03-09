@@ -17,32 +17,58 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
     // Wait for the page to load
     document.addEventListener('DOMContentLoaded', () => {
         if (pathname.startsWith('/live_chat')) {
-            addButton();
+            addOpenButton();
+            addContainer();
         }
     });
 
-    function addButton() {
+    function addOpenButton() {
         const container = document.getElementById('message-buttons');
-        if (!container) return;
 
+        if (!container) return;
         document.getElementById('AIChatAssistant_button')?.remove();
+        container.insertAdjacentHTML(
+            'afterbegin',
+            '<button id="AIChatAssistant_openButton">AI</button>'
+        );
+
+        const AIChatAssistant_openButton = document.getElementById(
+            'AIChatAssistant_openButton'
+        ) as HTMLButtonElement;
+
+        AIChatAssistant_openButton.addEventListener('click', openButtonClick);
+    }
+
+    let isOpen = false;
+    function openButtonClick() {
+        const chat = document.getElementById('chat');
+        const container = document.getElementById('AIChatAssistant_container');
+        if (!chat || !container) return;
+
+        if (!isOpen) {
+            container.style.height = '75%';
+        } else {
+            container.style.height = '0';
+        }
+        isOpen = !isOpen;
+    }
+
+    function addContainer() {
         from(fetch(chrome.runtime.getURL('/contentScript.html')))
             .pipe(
                 switchMap((response) => response.text()),
                 map((response) => {
-                    container.insertAdjacentHTML('afterbegin', response);
-
-                    const AIChatAssistant_button = document.getElementById(
-                        'AIChatAssistant_button'
-                    ) as HTMLButtonElement;
-
-                    AIChatAssistant_button.addEventListener('click', buttonClick);
+                    const chat = document.getElementById('chat');
+                    if (chat) chat.insertAdjacentHTML('afterend', response);
+                    document
+                        .getElementById('AIChatAssistant_startBtn')
+                        ?.addEventListener('click', startFunction);
                 })
             )
             .subscribe();
     }
 
-    async function buttonClick() {
+    async function startFunction() {
         const videoId = /chat~([^~]+)~/.exec(getYtInitialDataFromDOM())?.[1] ?? '';
 
         const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
@@ -56,7 +82,26 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
                 switchMap((array: ArrayBuffer[]) =>
                     speechToText$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
                 ),
-                switchMap((audioResponse) => generateAIResponse$(audioResponse))
+                tap(
+                    (audioResponse) =>
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        (document.getElementById('AIChatAssistant_summary')!.innerText =
+                            audioResponse.text)
+                ),
+                switchMap((audioResponse) => generateAIResponse$(audioResponse)),
+                tap((responses: IResponseViewModel[]) => {
+                    const response_container = document.getElementById('AIChatAssistant_responses');
+                    if (!response_container) return;
+                    response_container.innerHTML = '';
+                    responses.forEach((r) => {
+                        const aElement = document.createElement('a');
+                        aElement.className = 'list-group-item list-group-item-action';
+                        aElement.innerText = `${r.stream_language} | ${r.user_language}`;
+                        aElement.addEventListener('click', () => fillResponse(r.stream_language));
+
+                        response_container.appendChild(aElement);
+                    });
+                })
             )
             .subscribe();
     }
@@ -144,6 +189,10 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
                 return result;
             })
         );
+    }
+
+    function fillResponse(text: string): void {
+        console.debug('Fill response: %o', text);
     }
 
     // Download video (for testing)
