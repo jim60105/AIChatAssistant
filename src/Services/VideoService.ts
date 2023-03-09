@@ -1,113 +1,42 @@
-import { muxjs } from 'muxjs';
-import { switchMap, map, from, last, Subject, Observable, concatMap, take } from 'rxjs';
-
-declare global {
-    interface Window {
-        muxjs: typeof muxjs;
-    }
-}
+import { switchMap, map, from, Observable, concatMap, range, toArray } from 'rxjs';
+import { DashMPD } from '@liveinstantly/dash-mpd-parser';
+import { MPD } from 'Mpd';
 
 export class VideoService {
-    public downloadAudio(m3u8Urls: string[]): Observable<ArrayBuffer[]> {
-        const segmentUrls: string[] = [];
-        return from(m3u8Urls).pipe(
-            switchMap((url) => this.extractSegmentsUrls(url)),
-            map((urls) => segmentUrls.push(...urls)),
-            take(40),
-            last(),
-            switchMap(() => this.combineSegmentsToMp4(segmentUrls))
+    public static downloadAudio$(dashUrl: string): Observable<ArrayBuffer[]> {
+        return from(fetch(dashUrl)).pipe(
+            switchMap((response) => response.text()),
+            map((manifest) => this.extractDashResponse(manifest)),
+            switchMap((mpd) => this.extractSegmentsUrls$(mpd)),
+            concatMap((url) => fetch(url)),
+            switchMap((response) => from(response.arrayBuffer())),
+            toArray()
         );
     }
 
-    private async extractSegmentsUrls(m3u8Url: string): Promise<string[]> {
-        const m3u8Response = await fetch(m3u8Url);
-        const m3u8Text = await m3u8Response.text();
-
-        // Get the first m3u8 url (lowest quality)
-        const url = m3u8Text
-            .split('\n')
-            .filter((line) => line.trim().length > 0 && !line.startsWith('#'))
-            .at(1);
-
-        if (!url) throw new Error('No segment found in m3u8 file.');
-
-        const response = await fetch(url);
-        const text = await response.text();
-
-        const lastUrl = text
-            .split('\n')
-            .filter((line) => line.trim().length > 0 && !line.startsWith('#'))[0];
-        const currentSeq = +(/sq\/(\d+)\//.exec(lastUrl)?.[1] ?? 0);
-        let startSeq = currentSeq - 60;
-        if (startSeq < 0) startSeq = 0;
-
-        const segmentUrls: string[] = [];
-        for (let i = startSeq; i < currentSeq; i++) {
-            segmentUrls.push(lastUrl.replace(/sq\/\d+\//, `sq/${i}/`));
-        }
-
-        console.log('Get Segment Urls...');
-        segmentUrls.forEach((element) => {
-            console.debug(element);
-        });
-        return segmentUrls;
+    private static extractDashResponse(manifest: string): MPD {
+        const mpd = new DashMPD();
+        mpd.parse(manifest);
+        return mpd.getJSON() as MPD;
     }
 
-    // Modify from https://github.com/videojs/mux.js#readme
-    private combineSegmentsToMp4(segmentUrls: string[]): Observable<ArrayBuffer[]> {
-        const totalSegments = segmentUrls.length;
-        const sub = new Subject<ArrayBuffer>();
-        const result: ArrayBuffer[] = [];
-        const result$ = sub.asObservable().pipe(
-            map((arrayBuffer) => {
-                result.push(arrayBuffer);
-                if (result.length === totalSegments) {
-                    sub.complete();
-                }
-                return result;
-            })
-        );
-        if (segmentUrls.length === 0) {
-            sub.complete();
-            return result$;
-        }
+    private static extractSegmentsUrls$(manifest: MPD): Observable<string> {
+        const representation = manifest.MPD.Period[0].AdaptationSet.filter(
+            (p) => p['@mimeType'] === 'audio/mp4'
+        )[0].Representation.at(-1);
+        if (!representation) throw new Error('No audio found in manifest');
 
-        const transmuxer = new window.muxjs.mp4.Transmuxer({
-            remux: false,
-        });
-        // First segment
-        transmuxer.on('data', (segment: any) => {
-            if (segment.type !== 'audio') return;
+        const baseUrl = representation.BaseURL[0];
 
-            const data = new Uint8Array(segment.initSegment.byteLength + segment.data.byteLength);
-            data.set(segment.initSegment, 0);
-            data.set(segment.data, segment.initSegment.byteLength);
-            // console.log(window.muxjs.mp4.tools.inspect(data));
-            sub.next(data);
-        });
+        const sqString = representation.SegmentList.SegmentURL.at(-1)?.['@media'] ?? 'sq/0/';
+        const currentSeq = Number(/sq\/(\d+)\//.exec(sqString)?.[1]);
+        const earliestSeq = manifest.MPD['@yt:earliestMediaSequence'];
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        from(fetch(segmentUrls.shift()!))
-            .pipe(
-                switchMap((response) => from(response.arrayBuffer())),
-                map((response) => {
-                    transmuxer.push(new Uint8Array(response));
-                    transmuxer.flush();
-                    transmuxer.off('data');
-                    transmuxer.on('data', (segment: any) => {
-                        if (segment.type !== 'audio') return;
-                        sub.next(segment.data);
-                    });
-                }),
-                switchMap(() => from(segmentUrls)),
-                concatMap((url) => fetch(url)),
-                switchMap((response) => response.arrayBuffer()),
-                map((response) => {
-                    transmuxer.push(new Uint8Array(response));
-                    transmuxer.flush();
-                })
-            )
-            .subscribe();
-        return result$;
+        let lengthEverySegment = Number(/dur\/(\d+(\.\d+)?)/.exec(baseUrl)?.[1]);
+        if (!lengthEverySegment || lengthEverySegment === 0) lengthEverySegment = 5;
+
+        const count = Math.ceil(60 / lengthEverySegment); // 60s
+        const startSeq = Math.max(currentSeq - count, 0, earliestSeq);
+        return range(startSeq, currentSeq - startSeq).pipe(map((i) => `${baseUrl}sq/${i}/`));
     }
 }

@@ -1,5 +1,5 @@
+import { map, switchMap, tap, Observable, from, catchError } from 'rxjs';
 import { VideoService } from './Services/VideoService';
-import { map, switchMap, tap, Observable, from } from 'rxjs';
 
 (async function () {
     const pathname = window.location.pathname;
@@ -19,9 +19,8 @@ import { map, switchMap, tap, Observable, from } from 'rxjs';
         if (!container) return;
 
         document.getElementById('AIChatAssistant_button')?.remove();
-        from(chrome.runtime.getURL('/contentScript.html'))
+        from(fetch(chrome.runtime.getURL('/contentScript.html')))
             .pipe(
-                switchMap((url) => fetch(url)),
                 switchMap((response) => response.text()),
                 map((response) => {
                     container.insertAdjacentHTML('afterbegin', response);
@@ -39,34 +38,16 @@ import { map, switchMap, tap, Observable, from } from 'rxjs';
     async function buttonClick() {
         const videoId = /chat~([^~]+)~/.exec(getYtInitialDataFromDOM())?.[1] ?? '';
 
-        const videoService = new VideoService();
         const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
         console.debug('Getting video page...', watchUrl);
         from(fetch(watchUrl))
             .pipe(
                 switchMap((response) => response.text()),
-                map((response) => {
-                    const videoPageHtml = response;
-                    const m3u8Url =
-                        /hlsManifestUrl":"(.*\/file\/index\.m3u8)/.exec(videoPageHtml)?.[1] ?? '';
-                    console.debug('Get m3u8...', m3u8Url);
-                    return m3u8Url;
-                }),
-                switchMap((m3u8Url: string) => videoService.downloadAudio([m3u8Url])),
-                tap((array: ArrayBuffer[]) => {
-                    // Download segments (just for testing)
-                    const combinedBlob = new Blob(array, { type: 'video/mp4' });
-                    const combinedUrl = URL.createObjectURL(combinedBlob);
-                    const a = document.createElement('a');
-                    a.href = combinedUrl;
-                    a.download = 'audio.mp4';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(combinedUrl);
-                }),
+                map((response) => extractDashUrl(response)),
+                switchMap((dashUrl: string) => VideoService.downloadAudio$(dashUrl)),
+                tap((url) => downloadVideo(url)),
                 switchMap((array: ArrayBuffer[]) =>
-                    uploadFile(new File(array, 'audio.mp4', { type: 'video/mp4' }))
+                    uploadFile$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
                 ),
                 map((response) => {
                     console.debug('Get transcription: %o', response);
@@ -77,15 +58,35 @@ import { map, switchMap, tap, Observable, from } from 'rxjs';
             .subscribe();
     }
 
-    const uploadFile = (file: File): Observable<string> => {
+    function getYtInitialDataFromDOM() {
+        const text =
+            [...document.getElementsByTagName('script')].find((p) =>
+                p.innerHTML.includes('ytInitialData')
+            )?.innerHTML ?? '';
+        return /window\["ytInitialData"\]\s*=\s*(\{.+\})/.exec(text)?.[1] ?? '';
+    }
+
+    function extractDashUrl(html: string): string {
+        const videoPageHtml = html;
+        const dashUrl = /dashManifestUrl":"(.+?)",/.exec(videoPageHtml)?.[1] ?? '';
+        console.debug('Get dashUrl...', dashUrl);
+        return dashUrl;
+    }
+
+    function uploadFile$(file: File): Observable<string> {
         const formData = new FormData();
         formData.set('file', file, file.name);
         formData.set('model', 'whisper-1');
         formData.set('response_format', 'text');
         formData.set('temperature', '0.4');
-        formData.set('language', 'ja');
+        // formData.set('language', 'zh');
 
         return from(chrome.storage.sync.get('apiKey')).pipe(
+            tap((apiKey) => {
+                if (!apiKey.apiKey) {
+                    throw new Error('API Key is not set');
+                }
+            }),
             switchMap((apiKey) =>
                 fetch('https://api.openai.com/v1/audio/transcriptions', {
                     method: 'POST',
@@ -95,15 +96,24 @@ import { map, switchMap, tap, Observable, from } from 'rxjs';
                     body: formData,
                 })
             ),
-            switchMap((response) => response.text())
+            switchMap((response) => response.text()),
+            catchError((error) => {
+                alert(error);
+                return '';
+            })
         );
-    };
+    }
 
-    const getYtInitialDataFromDOM = () => {
-        const text =
-            [...document.getElementsByTagName('script')].find((p) =>
-                p.innerHTML.includes('ytInitialData')
-            )?.innerHTML ?? '';
-        return /window\["ytInitialData"\]\s*=\s*(\{.+\})/.exec(text)?.[1] ?? '';
-    };
+    // Download video (for testing)
+    function downloadVideo(array: ArrayBuffer[]): void {
+        const combinedBlob = new Blob(array, { type: 'video/mp4' });
+        const combinedUrl = URL.createObjectURL(combinedBlob);
+        const a = document.createElement('a');
+        a.href = combinedUrl;
+        a.download = 'audio.mp4';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(combinedUrl);
+    }
 })();

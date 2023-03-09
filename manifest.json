@@ -41,7 +41,6 @@
             "run_at": "document_start",
             "all_frames": true,
             "js": [
-                "assets/mux.min.js",
                 "contentScript.js"
             ],
             "css": [

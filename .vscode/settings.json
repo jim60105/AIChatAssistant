@@ -1,8 +1,7 @@
 {
     "cSpell.words": [
-        "muxjs",
-        "remux",
-        "Transmuxer"
+        "cbuf",
+        "liveinstantly"
     ],
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -78,8 +78,6 @@ module.exports = {
                 { from: 'node_modules/bootstrap-icons/font/fonts', to: 'assets/bootstrap/fonts' },
                 { from: 'node_modules/bootstrap-icons/LICENSE.md', to: 'assets/bootstrap/' },
 
-                { from: 'node_modules/mux.js/dist/mux.min.js', to: 'assets/' },
-
                 { from: 'manifest.json', to: '.' },
                 {
                     from: 'icon',
