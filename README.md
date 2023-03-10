@@ -2,7 +2,15 @@
 
 ![logo](./pic/icon/icon128.png)
 
-Let OpenAI bring borderless communication experience to your YouTube chatroom! Stream YouTube live to OpenAI, get AI-generated summaries and real-time reply options, to make your chatroom more interesting and connected!
+Have you ever been unable to interact with Vtubers on YouTube due to language barriers? Now, we have created a cross-border communication experience for you!
+
+With our new feature, you no longer need to worry about using a translation tool to communicate with Vtubers directly. Real-time translation allows you to easily overcome the challenges of multilingual communication!
+
+Our extension can **transmit YouTube live audio to OpenAI** for **intelligent translation and real-time response**. It automatically sends the previous minute of audio to the Whisper API for speech-to-text conversion, sends the results to OpenAI for content analysis, and **generates five one-click chat suggestion options** to easily overcome communication barriers.
+
+By using our feature, you can easily interact with Vtubers from around the world in the YouTube chat room and enjoy a borderless communication experience!
+
+**This article was generated and translated using artificial intelligence.*
 
 ## LICENSE
 
