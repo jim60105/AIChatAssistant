@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3.3.0
         with:
-          node-version: 16.3.0
+          node-version: 18.12.1
 
       - name: Write tag version into manifest.json
         if: startsWith(github.ref, 'refs/tags/')
@@ -32,7 +32,7 @@ jobs:
         run: npm run-script build
 
       - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
+        uses: vimtor/action-zip@v1.1
         with:
           files: dist/
           dest: AIChatAssistant.zip
@@ -43,7 +43,7 @@ jobs:
         run: npm run-script build:dev
 
       - name: Easy Zip Files
-        uses: vimtor/action-zip@v1
+        uses: vimtor/action-zip@v1.1
         with:
           files: dist/
           dest: AIChatAssistant_DEBUG.zip
@@ -51,7 +51,7 @@ jobs:
           recursive: true
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: |
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: artifact
 
