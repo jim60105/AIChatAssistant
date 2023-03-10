@@ -26,7 +26,7 @@ export interface IChatMessage {
     content: string;
 }
 
-export interface IAudioResponse {
+export interface ISpeechToTextResponse {
     task: string;
     language: string;
     duration: number;

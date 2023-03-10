@@ -1,14 +1,10 @@
 export interface IGenerateAIResponse {
-    original_lang: string;
+    stream_language: string;
     summary: string;
     responses: IResponse[];
+    same_language: boolean;
 }
 
 export interface IResponse {
     [key: string]: string;
-}
-
-export interface IResponseViewModel {
-    stream_language: string;
-    user_language: string;
 }

@@ -1,9 +1,23 @@
-<!DOCTYPE html>
-<html>
-  <head></head>
-  <body>
-    <input type="password" id="apiKey" />
-    <button id="saveBtn">Save</button>
-    <script src="popup.js"></script>
-  </body>
-</html>
+<section class="container p-3 mh-3">
+    <img src="assets/icon/icon48.png" class="rounded mx-auto d-block" alt="logo" />
+    <form>
+        <div class="mb-3">
+            <label for="apiKey" class="form-label">API Key</label>
+            <input type="password" class="form-control" id="apiKey" aria-describedby="emailHelp" />
+            <div id="apiKeyHelp" class="form-text">This is needed for using OpenAI API services.</div>
+            <div id="apiKeyHelp2" class="form-text">
+                <a
+                    href="https://platform.openai.com/account/api-keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Get your free api key here!</a
+                >
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Submit</button>
+    </form>
+</section>
+
+<script src="popup.js"></script>
+<link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<link href="popup.css" rel="stylesheet" />

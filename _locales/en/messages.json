@@ -4,7 +4,7 @@
         "description": "Name of the extension"
     },
     "extDescription": {
-        "message": "Let OpenAI bring borderless communication experience to your YouTube chatroom! Send YouTube live to OpenAI, get AI-generated summaries and real-time reply options, to make your chatroom more interesting and connected!",
+        "message": "Send YouTube live to OpenAI, get AI summaries & real-time replies for cross-language chat!",
         "description": "Description of the extension"
     }
 }

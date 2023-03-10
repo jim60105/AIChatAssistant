@@ -1,7 +1,9 @@
-import { IGenerateAIResponse, IResponseViewModel } from './Models/GenerateAIResponse';
-import { map, switchMap, Observable, from, tap } from 'rxjs';
+import { map, switchMap, from, tap } from 'rxjs';
+import { IGenerateAIResponse } from './Models/GenerateAIResponse';
+import { ISpeechToTextResponse } from './Models/OpenaiResponse';
 import { VideoService } from './Services/VideoService';
-import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
+import { OpenAIService } from './Services/OpenAIService';
+import { YoutubeService } from './Services/YoutubeService';
 
 (async function () {
     const pathname = window.location.pathname;
@@ -9,10 +11,7 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
         return;
     }
 
-    const apiKey = await chrome.storage.sync.get('apiKey');
-    if (!apiKey.apiKey) {
-        throw new Error('API Key is not set');
-    }
+    await OpenAIService.checkApiKey();
 
     if (pathname.startsWith('/live_chat')) {
         addOpenButton();
@@ -27,31 +26,39 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
         from(fetch(chrome.runtime.getURL('/contentScript_button.html')))
             .pipe(
                 switchMap((response) => response.text()),
-                map((response) => {
-                    container.insertAdjacentHTML('beforeend', response);
-
-                    const AIChatAssistant_openButton = document.getElementById(
-                        'AIChatAssistant_openButton'
-                    ) as HTMLButtonElement;
-
-                    AIChatAssistant_openButton.addEventListener('click', openButtonClick);
-                })
+                tap((response) => insertHtml(response)),
+                tap(() => setupOpenButton())
             )
             .subscribe();
     }
 
+    function insertHtml(html: string): void {
+        const container = document.getElementById('picker-buttons');
+        if (!container) return;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
     let isOpen = false;
-    function openButtonClick() {
+    function setupOpenButton(): void {
+        const openButton = document.getElementById(
+            'AIChatAssistant_openButton'
+        ) as HTMLButtonElement;
+        if (!openButton) return;
+
+        openButton.addEventListener('click', () => {
+            UIDisplay(!isOpen);
+        });
+    }
+
+    function UIDisplay(open: boolean): boolean {
         const chat = document.getElementById('chat');
         const container = document.getElementById('AIChatAssistant_container');
-        if (!chat || !container) return;
 
-        if (!isOpen) {
-            container.style.height = '75%';
-        } else {
-            container.style.height = '0';
-        }
-        isOpen = !isOpen;
+        if (!chat || !container) return false;
+
+        container.style.height = open ? '75%' : '0';
+        isOpen = open;
+        return open;
     }
 
     function addContainer() {
@@ -63,141 +70,98 @@ import { IAudioResponse, IOpenaiResponse } from './Models/OpenaiResponse';
                     if (chat) chat.insertAdjacentHTML('afterend', response);
                     document
                         .getElementById('AIChatAssistant_startBtn')
-                        ?.addEventListener('click', startFunction);
+                        ?.addEventListener('click', startMainFunction);
                 })
             )
             .subscribe();
     }
 
-    async function startFunction() {
-        const videoId = /chat~([^~]+)~/.exec(getYtInitialDataFromDOM())?.[1] ?? '';
-
-        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        console.debug('Getting video page...', watchUrl);
-        from(fetch(watchUrl))
+    /**
+     * Main function
+     */
+    async function startMainFunction() {
+        YoutubeService.fetchWatchPage$()
             .pipe(
-                switchMap((response) => response.text()),
-                map((response) => extractDashUrl(response)),
-                switchMap((dashUrl: string) => VideoService.downloadAudio$(dashUrl)),
-                tap((url) => downloadVideo(url)),
-                switchMap((array: ArrayBuffer[]) =>
-                    speechToText$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
+                map((watchPageHtml) => YoutubeService.extractDashUrl(watchPageHtml)),
+                switchMap((dashUrl) => VideoService.downloadAudio$(dashUrl)),
+                // tap((url) => downloadAudioToLocal(url)),
+                switchMap((array) =>
+                    OpenAIService.speechToText$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
                 ),
-                tap(
-                    (audioResponse) =>
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        (document.getElementById('AIChatAssistant_summary')!.innerText =
-                            audioResponse.text)
-                ),
-                switchMap((audioResponse) => generateAIResponse$(audioResponse)),
-                tap((responses: IResponseViewModel[]) => {
-                    const response_container = document.getElementById('AIChatAssistant_responses');
-                    if (!response_container) return;
-                    response_container.innerHTML = '';
-                    responses.forEach((r) => {
-                        const aElement = document.createElement('a');
-                        aElement.className = 'list-group-item list-group-item-action';
-                        aElement.innerText = `${r.stream_language} | ${r.user_language}`;
-                        aElement.addEventListener('click', () => fillResponse(r.stream_language));
-
-                        response_container.appendChild(aElement);
-                    });
-                })
+                tap((speechToTextResponse) => updateSummary(speechToTextResponse)),
+                switchMap((audioResponse) => OpenAIService.generateAIResponse$(audioResponse)),
+                tap((res) => showUI(res))
             )
             .subscribe();
     }
 
-    function getYtInitialDataFromDOM() {
-        const text =
-            [...document.getElementsByTagName('script')].find((p) =>
-                p.innerHTML.includes('ytInitialData')
-            )?.innerHTML ?? '';
-        return /window\["ytInitialData"\]\s*=\s*(\{.+\})/.exec(text)?.[1] ?? '';
+    function updateSummary(speechToTextResponse: ISpeechToTextResponse): void {
+        const summaryContainer = document.getElementById('AIChatAssistant_summary');
+        if (!summaryContainer) return;
+        summaryContainer.innerHTML = speechToTextResponse.text;
     }
 
-    function extractDashUrl(html: string): string {
-        const videoPageHtml = html;
-        const dashUrl = /dashManifestUrl":"(.+?)",/.exec(videoPageHtml)?.[1] ?? '';
-        console.debug('Get dashUrl...', dashUrl);
-        return dashUrl;
-    }
+    function showUI({ summary, responses, stream_language, same_language }: IGenerateAIResponse) {
+        const summaryContainer = document.getElementById('AIChatAssistant_summary');
+        if (!summaryContainer) return;
+        const speechToText = summaryContainer.innerHTML;
+        summaryContainer.innerHTML = `${summary} <br><br> ${speechToText}`;
 
-    function speechToText$(file: File): Observable<IAudioResponse> {
-        const formData = new FormData();
-        formData.set('file', file, file.name);
-        formData.set('model', 'whisper-1');
-        formData.set('response_format', 'verbose_json');
-        formData.set('temperature', '0.4');
+        const responseContainer = document.getElementById('AIChatAssistant_responses');
+        if (!responseContainer) return;
+        responseContainer.innerHTML = '';
 
-        return from(
-            fetch('https://api.openai.com/v1/audio/transcriptions', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${apiKey.apiKey}`,
-                },
-                body: formData,
-            })
-        ).pipe(
-            switchMap((response) => response.json()),
-            map((response: IAudioResponse) => {
-                console.debug(
-                    'Get %o transcription: %o',
-                    response.language,
-                    response.text,
-                    response
-                );
-                return response;
-            })
-        );
-    }
+        const fragment = document.createDocumentFragment();
+        const userLang = navigator.language;
 
-    function generateAIResponse$(audioResponse: IAudioResponse): Observable<IResponseViewModel[]> {
-        const browser_language = navigator.language;
-        const raw = JSON.stringify({
-            model: 'text-davinci-003',
-            prompt: `This passage is a speech-to-text input, there may be inaccuracies, so please make your own guesses about the possible near-sounding words. Please use ${browser_language} to summarize the main idea of the passage. And then Generate 5 responses in ${browser_language} and ${audioResponse.language}. The tone should be casual and use popular internet slang as much as possible. Each response should not exceed 30 tokens. The \`original_language\` field is the language of the speech to text input. Responses are strictly required in the following json format! \`\`\` { "original_language": "${audioResponse.language}",  "summary": "這篇文章的總結",   "responses": [     {       "${audioResponse.language}": "これが最初の可能な返信です",       "${browser_language}": "這是第一個可能的回覆"     },     {       "${audioResponse.language}": "問題ない",       "${browser_language}": "沒問題"     },     {       "${audioResponse.language}": "草",       "${browser_language}": "草"     }   ] } \`\`\`  Please read this passage and answer: """${audioResponse.text}"""`,
-            temperature: 0.4,
-            max_tokens: 2000,
+        responses.forEach((r) => {
+            const listItem = document.createElement('a');
+            listItem.classList.add('list-group-item', 'list-group-item-action');
+            const text = `${r[stream_language]}${same_language ? '' : ` | ${r[userLang]}`}`;
+            listItem.textContent = text;
+            listItem.addEventListener('click', () => responseClick(r[stream_language]));
+            fragment.appendChild(listItem);
         });
 
-        return from(
-            fetch('https://api.openai.com/v1/completions', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${apiKey.apiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: raw,
-                redirect: 'follow',
-            })
-        ).pipe(
-            switchMap((response) => response.json()),
-            map((response: IOpenaiResponse) => {
-                console.debug('Get response: %o', response);
-                return JSON.parse(
-                    response.choices[0].text?.replaceAll('\n', '').replaceAll('`', '') ?? ''
-                );
-            }),
-            map((response: IGenerateAIResponse) => {
-                console.debug('Parse response: %o', response);
-                const result = response.responses.map((p) => {
-                    return {
-                        stream_language: p[audioResponse.language],
-                        user_language: p[browser_language],
-                    } as IResponseViewModel;
-                });
-                console.debug('Parse responses to ViewModel: %o', result);
-                return result;
-            })
-        );
+        responseContainer.appendChild(fragment);
+    }
+
+    function responseClick(text: string) {
+        fillResponse(text);
+        UIDisplay(false);
     }
 
     function fillResponse(text: string): void {
-        console.debug('Fill response: %o', text);
+        // NOTE: Be careful when refactoring!
+        // Youtube uses same id multiple times in the page, so it is necessary to take the element like this
+        // And also, the element is not a input element, but a div element!
+        const input = document
+            .getElementsByTagName('yt-live-chat-text-input-field-renderer')[0]
+            ?.querySelector('#input') as HTMLDivElement;
+
+        if (!input) {
+            console.warn('Cannot find input element');
+            return;
+        }
+
+        input.innerText = '';
+
+        // NOTE: Be careful when refactoring!
+        // This must be implemented in this way, or else the YouTube emoji (👏 :clap:) won't function properly.
+        // While it's highly unlikely that we'll come across GPT using emojis, I believe there are sufficient reasons to retain this hack.
+        // This code has been working without issue for months in my other project, so I'm confident it will work here.
+        // https://gist.github.com/jim60105/43b2c53bb59fb588e351982c1a14e273#file-youtube-user-js-L169-L191
+        const data = new DataTransfer();
+        data.setData('text/plain', text);
+        input.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, clipboardData: data }));
     }
 
-    // Download video (for testing)
-    function downloadVideo(array: ArrayBuffer[]): void {
+    /**
+     * Download audio (for testing)
+     * @param array
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    function downloadAudioToLocal(array: ArrayBuffer[]): void {
         const combinedBlob = new Blob(array, { type: 'video/mp4' });
         const combinedUrl = URL.createObjectURL(combinedBlob);
         const a = document.createElement('a');
