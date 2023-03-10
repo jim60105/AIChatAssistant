@@ -47,11 +47,26 @@ export class OpenAIService {
         audioResponse: ISpeechToTextResponse
     ): Observable<IGenerateAIResponse> {
         const browser_language = navigator.language;
+        /**
+         * Models available for this api:
+         * text-davinci-003
+         * text-davinci-002: Performance is very bad, give it up.
+         * text-curie-001
+         * text-babbage-001
+         * text-ada-001
+         * davinci
+         * curie
+         * babbage
+         * ada
+         *
+         * NOTE: Any model with less than 3000 tokens is not suitable for our situation
+         * https://platform.openai.com/docs/models/model-endpoint-compatability
+         */
         const raw = JSON.stringify({
             model: 'text-davinci-003',
             prompt: `This passage is a speech-to-text input, there may be inaccuracies, so please make your own guesses about the possible near-sounding words. Please use ${browser_language} to summarize the main idea of the passage. And then Generate 5 responses in ${browser_language} and ${audioResponse.language}. The tone should be casual and use popular internet slang as much as possible. Each response should not exceed 30 tokens. The \`stream_language\` field is the language of the speech to text input. Responses are strictly required in the following json format! \`\`\` { "stream_language": "${audioResponse.language}",  "summary": "這篇文章的總結",   "responses": [     {       "${audioResponse.language}": "これが最初の可能な返信です",       "${browser_language}": "這是第一個可能的回覆"     },     {       "${audioResponse.language}": "問題ない",       "${browser_language}": "沒問題"     },     {       "${audioResponse.language}": "草",       "${browser_language}": "草"     }   ] } \`\`\`  Please read this passage and answer: """${audioResponse.text}"""`,
-            temperature: 0.4,
-            max_tokens: 2000,
+            temperature: 1,
+            max_tokens: 2500,
         });
 
         return from(
@@ -78,7 +93,6 @@ export class OpenAIService {
                 response.same_language =
                     getLangNameFromCode(browser_languageCode)?.name.toLowerCase() ===
                     response.stream_language;
-                console.debug('Parse responses to ViewModel: %o', response);
                 return response;
             })
         );
