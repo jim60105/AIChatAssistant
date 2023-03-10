@@ -1,6 +1,6 @@
 import { map, switchMap, from, tap } from 'rxjs';
 import { IGenerateAIResponse } from './Models/GenerateAIResponse';
-import { ISpeechToTextResponse } from './Models/OpenaiResponse';
+import { ISpeechToTextResponse } from './Models/OpenAIResponse';
 import { VideoService } from './Services/VideoService';
 import { OpenAIService } from './Services/OpenAIService';
 import { YoutubeService } from './Services/YoutubeService';

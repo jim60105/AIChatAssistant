@@ -1,13 +1,13 @@
-export interface IOpenaiResponse {
+export interface IOpenAIResponse {
     id: string;
     object: string;
     created: number;
     model: string;
-    choices: Choice[];
+    choices: IChoice[];
     usage: IUsage;
 }
 
-export interface Choice {
+export interface IChoice {
     index: number;
     text: string | undefined;
     message: IChatMessage | undefined;
@@ -30,11 +30,11 @@ export interface ISpeechToTextResponse {
     task: string;
     language: string;
     duration: number;
-    segments: Segment[];
+    segments: ISegment[];
     text: string;
 }
 
-export interface Segment {
+export interface ISegment {
     id: number;
     seek: number;
     start: number;

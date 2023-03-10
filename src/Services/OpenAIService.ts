@@ -1,7 +1,7 @@
 import { getLangNameFromCode } from 'language-name-map';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { IGenerateAIResponse } from '../Models/GenerateAIResponse';
-import { ISpeechToTextResponse, IOpenaiResponse } from '../Models/OpenAIResponse';
+import { ISpeechToTextResponse, IOpenAIResponse } from '../Models/OpenAIResponse';
 
 export class OpenAIService {
     private static apiKey = '';
@@ -66,7 +66,7 @@ export class OpenAIService {
             })
         ).pipe(
             switchMap((response) => response.json()),
-            map((response: IOpenaiResponse) => {
+            map((response: IOpenAIResponse) => {
                 console.debug('Get response: %o', response);
                 return JSON.parse(
                     response.choices[0].text?.replaceAll('\n', '').replaceAll('`', '') ?? ''
