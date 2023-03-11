@@ -57,6 +57,7 @@ import { YoutubeService } from './Services/YoutubeService';
         if (!chat || !container) return false;
 
         container.style.height = open ? '70%' : '0';
+        container.style.padding = open ? '10px' : '0';
         isOpen = open;
         return open;
     }

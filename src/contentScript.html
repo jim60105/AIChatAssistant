@@ -1,19 +1,23 @@
-<div id="AIChatAssistant_container">
-    <div id="AIChatAssistant_function"><button id="AIChatAssistant_startBtn">GO</button></div>
-    <label for="AIChatAssistant_AudioDuration" class="form-label">Audio Duration</label>
-    <input
-        type="range"
-        class="form-range"
-        id="AIChatAssistant_AudioDuration"
-        min="10"
-        max="120"
-        step="10"
-        value="30"
-    />
-    <div id="AIChatAssistant_summary">summary</div>
+<div id="AIChatAssistant_container" class="container">
+    <div id="AIChatAssistant_function" class="mb-3 d-grid gap-2">
+        <button type="button" class="btn btn-primary" id="AIChatAssistant_startBtn">GO</button>
+    </div>
+    <div class="mb-3">
+        <label for="AIChatAssistant_AudioDuration" class="form-label">Audio Duration</label>
+        <input
+            type="range"
+            class="form-range"
+            id="AIChatAssistant_AudioDuration"
+            min="10"
+            max="120"
+            step="10"
+            value="30"
+        />
+    </div>
+    <div id="AIChatAssistant_summary"></div>
     <div id="AIChatAssistant_responses" class="list-group">
-        <a href="#" class="list-group-item list-group-item-action">A second link item</a>
+        <!-- <a href="#" class="list-group-item list-group-item-action">A second link item</a>
         <a href="#" class="list-group-item list-group-item-action">A third link item</a>
-        <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
+        <a href="#" class="list-group-item list-group-item-action">A fourth link item</a> -->
     </div>
 </div>
