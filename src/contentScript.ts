@@ -119,12 +119,27 @@ import { YoutubeService } from './Services/YoutubeService';
         const userLang = navigator.language;
 
         responses.forEach((r) => {
-            const listItem = document.createElement('a');
-            listItem.classList.add('list-group-item', 'list-group-item-action');
-            const text = `${r[stream_language]}${same_language ? '' : ` | ${r[userLang]}`}`;
-            listItem.textContent = text;
-            listItem.addEventListener('click', () => responseClick(r[stream_language]));
-            fragment.appendChild(listItem);
+            // https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/template#%E7%A4%BA%E4%BE%8B
+            if ('content' in document.createElement('template')) {
+                const t = document.querySelector('#responseRow') as HTMLTemplateElement;
+                const clone = document.importNode(t.content, true);
+                const a = clone.querySelectorAll('a')[0] as HTMLAnchorElement;
+                a.textContent = `${r[stream_language]}${same_language ? '' : ` | ${r[userLang]}`}`;
+                a.addEventListener('click', () => responseClick(r[stream_language]));
+
+                const b = clone.querySelectorAll('button')[0] as HTMLButtonElement;
+                b.addEventListener('click', () => {
+                    const utterance = new SpeechSynthesisUtterance(r[stream_language]);
+                    speechSynthesis.speak(utterance);
+                });
+
+                const responseBox = document.querySelector(
+                    '#AIChatAssistant_responses'
+                ) as HTMLDivElement;
+                responseBox.appendChild(clone);
+            } else {
+                // 因為 HTML template 不被支援，所以要用其他方法在表格增加新行
+            }
         });
 
         responseContainer.appendChild(fragment);
