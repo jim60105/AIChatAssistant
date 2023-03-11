@@ -2,12 +2,21 @@
 
 #AIChatAssistant_container {
     height: 0;
-    background-color: darkgray;
-    overflow-y: hidden;
+    background-color: var(--yt-live-chat-action-panel-background-color, var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3));
+    overflow: hidden;
 
     #AIChatAssistant_summary {
-        max-height: 50%;
-        overflow-y: scroll;
+        max-height: 30%;
+        overflow: auto;
+        }
+
+        .list-group-item {
+            color: var(--yt-spec-text-primary);
+            background-color: var(--yt-live-chat-action-panel-background-color, var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3));
+
+            &:hover {
+                background-color: var(--yt-live-chat-product-picker-hover-color);
+            }
     }
 }
 
