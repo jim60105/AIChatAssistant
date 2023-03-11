@@ -1,4 +1,4 @@
-import { getLangNameFromCode } from 'language-name-map';
+import ISO6391 from 'iso-639-1';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { IGenerateAIResponse } from '../Models/GenerateAIResponse';
 import { ISpeechToTextResponse, IOpenAIResponse } from '../Models/OpenAIResponse';
@@ -91,7 +91,7 @@ export class OpenAIService {
                 console.debug('Parse response: %o', response);
                 const browser_languageCode = browser_language.substring(0, 2);
                 response.same_language =
-                    getLangNameFromCode(browser_languageCode)?.name.toLowerCase() ===
+                    ISO6391.getName(browser_languageCode)?.toLowerCase() ===
                     response.stream_language;
                 return response;
             })

@@ -1,4 +1,5 @@
 import { map, switchMap, from, tap } from 'rxjs';
+import ISO6391 from 'iso-639-1';
 import { IGenerateAIResponse } from './Models/GenerateAIResponse';
 import { ISpeechToTextResponse } from './Models/OpenAIResponse';
 import { VideoService } from './Services/VideoService';
@@ -130,6 +131,7 @@ import { YoutubeService } from './Services/YoutubeService';
                 const b = clone.querySelectorAll('button')[0] as HTMLButtonElement;
                 b.addEventListener('click', () => {
                     const utterance = new SpeechSynthesisUtterance(r[stream_language]);
+                    utterance.lang = ISO6391.getCode(stream_language);
                     speechSynthesis.speak(utterance);
                 });
 
