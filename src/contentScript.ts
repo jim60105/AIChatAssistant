@@ -80,10 +80,13 @@ import { YoutubeService } from './Services/YoutubeService';
      * Main function
      */
     async function startMainFunction() {
+        const audioDuration =
+            (document.getElementById('AIChatAssistant_AudioDuration') as HTMLInputElement).value ??
+            60;
         YoutubeService.fetchWatchPage$()
             .pipe(
                 map((watchPageHtml) => YoutubeService.extractDashUrl(watchPageHtml)),
-                switchMap((dashUrl) => VideoService.downloadAudio$(dashUrl)),
+                switchMap((dashUrl) => VideoService.downloadAudio$(dashUrl, Number(audioDuration))),
                 // tap((url) => downloadAudioToLocal(url)),
                 switchMap((array) =>
                     OpenAIService.speechToText$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
