@@ -103,6 +103,11 @@ import { YoutubeService } from './Services/YoutubeService';
     function updateSummary(speechToTextResponse: ISpeechToTextResponse): void {
         const summaryContainer = document.getElementById('AIChatAssistant_summary');
         if (!summaryContainer) return;
+        if (!speechToTextResponse.text) {
+            console.error('Speech to text failed');
+            summaryContainer.innerHTML = 'Speech to text failed! Please try again.';
+            throw new Error('Speech to text failed!');
+        }
         summaryContainer.innerHTML = speechToTextResponse.text;
     }
 

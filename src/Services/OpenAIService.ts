@@ -89,6 +89,7 @@ export class OpenAIService {
             }),
             map((response: IGenerateAIResponse) => {
                 console.debug('Parse response: %o', response);
+                response.stream_language = response.stream_language.toLowerCase();
                 const browser_languageCode = browser_language.substring(0, 2);
                 response.same_language =
                     ISO6391.getName(browser_languageCode)?.toLowerCase() ===
