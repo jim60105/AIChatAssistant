@@ -91,9 +91,12 @@ export class OpenAIService {
             switchMap((response) => response.json()),
             map((response: IOpenAIResponse) => {
                 console.debug('Get response: %o', response);
-                return JSON.parse(
-                    response.choices[0].text?.replaceAll('\n', '').replaceAll('`', '') ?? ''
-                );
+                const responseText =
+                    /(\{.+\})/.exec(
+                        response.choices[0].text?.replaceAll('\n', '').replaceAll('`', '') ?? ''
+                    )?.[1] ?? '';
+
+                return JSON.parse(responseText);
             }),
             map((response: IGenerateAIResponse) => {
                 console.debug('Parse response: %o', response);
