@@ -152,6 +152,8 @@ import { YoutubeService } from './Services/YoutubeService';
                 b.addEventListener('click', () => {
                     const utterance = new SpeechSynthesisUtterance(r[stream_language]);
                     utterance.lang = ISO6391.getCode(stream_language);
+                    utterance.rate = 0.7;
+                    utterance.volume = 0.7;
                     speechSynthesis.speak(utterance);
                 });
 
