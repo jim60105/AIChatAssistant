@@ -108,8 +108,8 @@ import { YoutubeService } from './Services/YoutubeService';
                 switchMap((array) =>
                     OpenAIService.speechToText$(new File(array, 'audio.mp4', { type: 'video/mp4' }))
                 ),
-                tap((speechToTextResponse) => updateSummary(speechToTextResponse)),
-                switchMap((audioResponse) => OpenAIService.generateAIResponse$(audioResponse)),
+                tap((speechToText) => updateSummary(speechToText)),
+                switchMap((speechToText) => OpenAIService.generateAIResponse$(speechToText)),
                 tap((res) => showUI(res))
             )
             .subscribe();

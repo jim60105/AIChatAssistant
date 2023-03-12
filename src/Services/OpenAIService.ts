@@ -19,8 +19,11 @@ export class OpenAIService {
         formData.set('file', file, file.name);
         formData.set('model', 'whisper-1');
         formData.set('response_format', 'verbose_json');
-        formData.set('temperature', '0.4');
-        formData.set('prompt', 'This audio is a cut from a live stream. Please remove duplicate words. It may not be in English, please try to identify it.');
+        formData.set('temperature', '0.3');
+        formData.set(
+            'prompt',
+            'This audio clip was extracted from a live broadcast. Please identify and remove any repeated words.'
+        );
 
         return from(
             fetch(OpenAIService.OpenAIEndpoint + 'audio/transcriptions', {
@@ -45,9 +48,12 @@ export class OpenAIService {
     }
 
     public static generateAIResponse$(
-        audioResponse: ISpeechToTextResponse
+        speechToText: ISpeechToTextResponse
     ): Observable<IGenerateAIResponse> {
-        const browser_language = navigator.language;
+        const browserLanguage = navigator.language;
+        const streamLanguage = speechToText.language;
+        const responseCount = 10;
+
         /**
          * Models available for this api:
          * text-davinci-003
@@ -65,9 +71,10 @@ export class OpenAIService {
          */
         const raw = JSON.stringify({
             model: 'text-davinci-003',
-            prompt: `This passage is a raw speech-to-text input from a live stream. There may be inaccuracies, so please make your own guesses about the possible near-sounding words. Please remove duplicate words. Please use ${browser_language} to summarize the main idea of the passage. And then Generate 5 responses in one set in ${browser_language} and ${audioResponse.language}. The tone should be casual and use popular internet slang as much as possible. Each response should not exceed 30 tokens. The \`stream_language\` field is the language of the speech to text input. Responses are strictly required in the following valid json format!! \`\`\` { "stream_language": "${audioResponse.language}",  "summary": "這篇文章的總結",   "responses": [     {       "${audioResponse.language}": "これが最初の可能な返信です",       "${browser_language}": "這是第一個可能的回覆"     },     {       "${audioResponse.language}": "問題ない",       "${browser_language}": "沒問題"     },     {       "${audioResponse.language}": "草",       "${browser_language}": "草"     }   ] } \`\`\`  Please read this passage and answer: """${audioResponse.text}"""`,
+            prompt: `This is a transcription of a live stream that has been converted from speech to text. Please note that some words may be incorrect due to the conversion process, so use your own judgment to figure out what the speaker meant. Ignore any parts of the passage that are repeated, and guess what's missing if necessary. Using ${browserLanguage}, summarize the main idea of the passage. Then, generate ${responseCount} casual and slangy responses in both ${browserLanguage} and ${streamLanguage}, each no longer than 30 tokens. Be careful not to misplace the language in the responses. Responses are strictly required in the following valid json format!! \`\`\` { "summary": "這篇文章的總結",   "responses": [     {       "${streamLanguage}": "これが最初の可能な返信です",       "${browserLanguage}": "這是第一個可能的回覆"     },     {       "${streamLanguage}": "問題ない",       "${browserLanguage}": "沒問題"     },     {       "${streamLanguage}": "草",       "${browserLanguage}": "草"     }   ] } \`\`\`  Please read this passage and answer: """${speechToText.text}"""`,
+
             temperature: 1,
-            max_tokens: 2500,
+            max_tokens: 2000,
         });
 
         return from(
@@ -90,8 +97,8 @@ export class OpenAIService {
             }),
             map((response: IGenerateAIResponse) => {
                 console.debug('Parse response: %o', response);
-                response.stream_language = response.stream_language.toLowerCase();
-                const browser_languageCode = browser_language.substring(0, 2);
+                response.stream_language = speechToText.language.toLowerCase();
+                const browser_languageCode = browserLanguage.substring(0, 2);
                 response.same_language =
                     ISO6391.getName(browser_languageCode)?.toLowerCase() ===
                     response.stream_language;
