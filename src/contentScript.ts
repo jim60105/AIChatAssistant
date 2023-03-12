@@ -49,6 +49,10 @@ import { YoutubeService } from './Services/YoutubeService';
         openButton.addEventListener('click', () => {
             UIDisplay(!isOpen);
         });
+
+        // Close our container when emoji panel is clicked
+        const emojiButtons = document.getElementById('picker-buttons')?.querySelector('#emoji');
+        if (emojiButtons) emojiButtons.addEventListener('click', () => UIDisplay(false));
     }
 
     function UIDisplay(open: boolean): boolean {
@@ -57,8 +61,19 @@ import { YoutubeService } from './Services/YoutubeService';
 
         if (!chat || !container) return false;
 
-        container.style.height = open ? '70%' : '0';
-        container.style.padding = open ? '10px' : '0';
+        if (open) {
+            container.classList.add('open');
+
+            // Close emoji panel when our container is opened
+            // Actually, it won't change the state in YouTube's code, which means it'll cause state mismatch. But it's fine.
+            const emojiContainer = document.getElementById('pickers')?.children;
+            if (!emojiContainer) return false;
+            for (const item of emojiContainer) {
+                item.classList.remove('iron-selected');
+            }
+        } else {
+            container.classList.remove('open');
+        }
         isOpen = open;
         return open;
     }

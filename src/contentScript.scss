@@ -2,11 +2,18 @@
 
 #AIChatAssistant_container {
     height: 0;
+    max-height: calc(100% - 140px);
     padding: 0;
     width: 95%;
     background-color: var(--yt-live-chat-action-panel-background-color, var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3));
     overflow: hidden;
     text-align: center;
+
+    &.open {
+        height: 100%;
+        overflow-y: auto;
+        padding: 10px;
+    }
 
     #AIChatAssistant_summary {
         max-height: 40%;
