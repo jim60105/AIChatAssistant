@@ -21,6 +21,8 @@
         }
 
         .list-group-item {
+            border: 0;
+            cursor: pointer;
             color: var(--yt-spec-text-primary);
             background-color: var(--yt-live-chat-action-panel-background-color, var(--yt-deprecated-opalescence-soft-grey-opacity-lighten-3));
 
