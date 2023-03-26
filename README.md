@@ -10,8 +10,8 @@
 ![Google Chrome](https://img.shields.io/static/v1?style=for-the-badge&message=Google+Chrome&color=4285F4&logo=Google+Chrome&logoColor=FFFFFF&label=) ![YouTube](https://img.shields.io/static/v1?style=for-the-badge&message=YouTube&color=FF0000&logo=YouTube&logoColor=FFFFFF&label=)
 
 > **Note**\
-> For README.md in Chinese, please refer to [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh).\
-> 中文版本的 README.md，請參考 [Chrome Web Store](https://chrome.google.com/webstore/detail/kdlhjpdoaabhpolkaghkjklfcdfjapkh)。
+> For README.md in Chinese, please refer to [Chrome Web Store](https://chrome.google.com/webstore/detail/oeoelnddjmomegbkhdbcbbdndgijjgbe).\
+> 中文版本的 README.md，請參考 [Chrome Web Store](https://chrome.google.com/webstore/detail/oeoelnddjmomegbkhdbcbbdndgijjgbe)。
 
 Have you ever been unable to interact with Vtubers on YouTube due to language barriers? Now, we have created a cross-border communication experience for you!
 
