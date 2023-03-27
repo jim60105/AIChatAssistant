@@ -1,4 +1,4 @@
-import { map, switchMap, from, tap, interval, takeWhile, filter } from 'rxjs';
+import { map, switchMap, tap, interval, takeWhile, filter, catchError, of, from } from 'rxjs';
 import ISO6391 from 'iso-639-1';
 import { IGenerateAIResponse } from './Models/GenerateAIResponse';
 import { ISpeechToTextResponse } from './Models/OpenAIResponse';
@@ -113,6 +113,7 @@ import { YoutubeService } from './Services/YoutubeService';
      * Main function
      */
     async function startMainFunction() {
+        await OpenAIService.checkApiKey();
         const audioDuration =
             (document.getElementById('AIChatAssistant_AudioDuration') as HTMLInputElement).value ??
             60;
@@ -126,7 +127,12 @@ import { YoutubeService } from './Services/YoutubeService';
                 ),
                 tap((speechToText) => updateSummary(speechToText)),
                 switchMap((speechToText) => OpenAIService.generateAIResponse$(speechToText)),
-                tap((res) => showUI(res))
+                tap((res) => showUI(res)),
+                catchError((err) => {
+                    console.error(err);
+                    alert('【AI Chat Assistant】\n' + err.message);
+                    return of(null);
+                })
             )
             .subscribe();
     }

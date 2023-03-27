@@ -1,5 +1,5 @@
 import ISO6391 from 'iso-639-1';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { catchError, from, map, Observable, switchMap, tap } from 'rxjs';
 import { IGenerateAIResponse } from '../Models/GenerateAIResponse';
 import { ISpeechToTextResponse, IOpenAIResponse } from '../Models/OpenAIResponse';
 
@@ -34,6 +34,10 @@ export class OpenAIService {
                 body: formData,
             })
         ).pipe(
+            tap((response) => {
+                if (response.status !== 200)
+                    throw new Error('Invalid API key!\nPlease re-enter a new OpenAI API Key.');
+            }),
             switchMap((response) => response.json()),
             map((response: ISpeechToTextResponse) => {
                 console.debug(
