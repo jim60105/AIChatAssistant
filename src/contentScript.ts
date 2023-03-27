@@ -1,4 +1,4 @@
-import { map, switchMap, from, tap } from 'rxjs';
+import { map, switchMap, from, tap, interval, takeWhile, filter } from 'rxjs';
 import ISO6391 from 'iso-639-1';
 import { IGenerateAIResponse } from './Models/GenerateAIResponse';
 import { ISpeechToTextResponse } from './Models/OpenAIResponse';
@@ -24,19 +24,35 @@ import { YoutubeService } from './Services/YoutubeService';
 
         if (!container) return;
 
-        from(fetch(chrome.runtime.getURL('/contentScript_button.html')))
+        interval(3000)
             .pipe(
+                filter(() => parentElementExisted()),
+                filter(() => notInSubscribersOnlyMode()),
+                takeWhile(() => !openButtonExisted()),
+                switchMap(() => from(fetch(chrome.runtime.getURL('/contentScript_button.html')))),
                 switchMap((response) => response.text()),
-                tap((response) => insertHtml(response)),
+                tap((html) => insertOpenButton(html)),
                 tap(() => setupOpenButton())
             )
             .subscribe();
     }
 
-    function insertHtml(html: string): void {
-        const container = document.getElementById('picker-buttons');
-        if (!container) return;
-        container.insertAdjacentHTML('beforeend', html);
+    function parentElementExisted(): boolean {
+        return !!document.getElementById('picker-buttons');
+    }
+
+    function notInSubscribersOnlyMode(): boolean {
+        return !document
+            .getElementById('picker-buttons')
+            ?.classList.contains('yt-live-chat-restricted-participation-renderer');
+    }
+
+    function openButtonExisted() {
+        return document.getElementById('AIChatAssistant_openButton');
+    }
+
+    function insertOpenButton(html: string): void {
+        return document.getElementById('picker-buttons')?.insertAdjacentHTML('beforeend', html);
     }
 
     let isOpen = false;
