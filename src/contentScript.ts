@@ -52,7 +52,9 @@ import { YoutubeService } from './Services/YoutubeService';
     }
 
     function insertOpenButton(html: string): void {
-        return document.getElementById('picker-buttons')?.insertAdjacentHTML('beforeend', html);
+        // Youtube is 💩 that they're reusing the same ID
+        const buttons = document.querySelectorAll('#picker-buttons');
+        return buttons[buttons.length - 1].insertAdjacentHTML('beforeend', html);
     }
 
     let isOpen = false;
