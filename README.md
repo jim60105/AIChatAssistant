@@ -27,8 +27,15 @@ By using our feature, you can easily interact with Vtubers from around the world
 
 ## LICENSE
 
-This project is licensed under the terms of the MIT license.\
-See [LICENSE](LICENSE) for more information.
+> The icon is made by [Puckung graphic design factory](https://www.iconfinder.com/Puckung).  
+> The icon is licensed under the terms of the [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
 
-The icon is made by [Puckung graphic design factory](https://www.iconfinder.com/Puckung).\
-The icon is licensed under the terms of the [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+<img src="https://github.com/jim60105/AIChatAssistant/assets/16995691/d00bbd71-e3ba-4d89-be94-1532c074e415" alt="open graph" width="200" />
+
+[GNU GENERAL PUBLIC LICENSE Version 3](LICENSE)
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
