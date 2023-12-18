@@ -4,6 +4,8 @@
 
 ![OpenAI](https://img.shields.io/static/v1?style=for-the-badge&message=OpenAI&color=70a597&logo=OpenAI&logoColor=FFFFFF&label=)
 
+[![CodeFactor](https://www.codefactor.io/repository/github/jim60105/aichatassistant/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/jim60105/aichatassistant)
+
 [![GitHub tag](https://img.shields.io/github/tag/jim60105/AIChatAssistant?style=for-the-badge)](https://github.com/jim60105/AIChatAssistant/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/jim60105/AIChatAssistant?style=for-the-badge)](https://github.com/jim60105/AIChatAssistants) [![LICENSE](https://img.shields.io/github/license/jim60105/AIChatAssistant?style=for-the-badge)](https://github.com/jim60105/AIChatAssistant/blob/master/LICENSE) \
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/oeoelnddjmomegbkhdbcbbdndgijjgbe?style=for-the-badge)](https://chrome.google.com/webstore/detail/oeoelnddjmomegbkhdbcbbdndgijjgbe) [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/oeoelnddjmomegbkhdbcbbdndgijjgbe?style=for-the-badge)](https://chrome.google.com/webstore/detail/oeoelnddjmomegbkhdbcbbdndgijjgbe) \
 ![TypeScript](https://img.shields.io/static/v1?style=for-the-badge&message=TypeScript&color=3178C6&logo=TypeScript&logoColor=FFFFFF&label=) ![Webpack](https://img.shields.io/static/v1?style=for-the-badge&message=Webpack&color=222222&logo=Webpack&logoColor=8DD6F9&label=) \
