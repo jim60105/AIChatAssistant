@@ -25,6 +25,17 @@ By using our feature, you can easily interact with Vtubers from around the world
 
 **This article was generated and translated using artificial intelligence.*
 
+## What it does?
+
+- Retrieve the most recent few seconds of audio from a YouTube live stream. 30 seconds by default, but there is a slider available for adjusting it.
+- Use the [OpenAI Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to convert the audio into text through speech-to-text transcription.
+- Forward the transcription to the [OpenAI gpt-3.5-turbo Text generation API](https://platform.openai.com/docs/guides/text-generation) for content analysis and generate potential chat suggestions.
+- Present the chat suggestion options within the YouTube chat room, enabling users to effortlessly send them to the chat room with a single click.
+
+## Disclaimer
+
+Just a heads up, this is a little project I whipped up for fun. I cannot guarantee its reliability or the quality of the AI responses. So, please approach it with some skepticism and try to find any usable responses. If any one would like to enhance it, feel free to send me a PR!
+
 ## LICENSE
 
 > The icon is made by [Puckung graphic design factory](https://www.iconfinder.com/Puckung).  

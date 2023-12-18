@@ -118,7 +118,7 @@ import { YoutubeService } from './Services/YoutubeService';
         await OpenAIService.checkApiKey();
         const audioDuration =
             (document.getElementById('AIChatAssistant_AudioDuration') as HTMLInputElement).value ??
-            60;
+            30;
         YoutubeService.fetchWatchPage$()
             .pipe(
                 map((watchPageHtml) => YoutubeService.extractDashUrl(watchPageHtml)),
