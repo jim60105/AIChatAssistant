@@ -1,5 +1,5 @@
 import ISO6391 from 'iso-639-1';
-import { catchError, from, map, Observable, switchMap, tap } from 'rxjs';
+import { from, map, Observable, switchMap, tap } from 'rxjs';
 import { IGenerateAIResponse } from '../Models/GenerateAIResponse';
 import { ISpeechToTextResponse, IOpenAIResponse } from '../Models/OpenAIResponse';
 

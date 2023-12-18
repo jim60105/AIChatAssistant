@@ -1,16 +1,27 @@
 <div
-    class="style-scope yt-live-chat-icon-toggle-button-renderer"
+    class="style-scope yt-live-chat-message-input-renderer"
     id="button"
-    style="padding: 0; display: flex"
+    style="color: var(--yt-spec-text-primary); display: block; margin-left: 12px"
 >
-    <div
-        class="style-scope"
+    <yt-icon-button
+        class="style-scope yt-live-chat-icon-toggle-button-renderer"
         id="AIChatAssistant_openButton"
         title="Open AI Chat Assistant"
         aria-label="Open AI Chat Assistant"
+        style="
+            width: 36px;
+            height: 36px;
+            padding: 3px;
+            background-color: var(--yt-spec-additive-background);
+            border-radius: 18px;
+        "
     >
-        <button class="style-scope yt-icon-button" aria-label="Open AI Chat Assistant">
-            <span id="bubble" class="style-scope"></span>
+        <button
+            id="AIChatAssistant_button"
+            class="style-scope yt-icon-button"
+            aria-label="Open AI Chat Assistant"
+        >
+            <span id="bubble" class="style-scope" style="top: -6px; left: -6px"></span>
             <div class="style-scope">
                 <div class="style-scope">
                     <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="30px">
@@ -29,9 +40,15 @@
                 <span id="icon-badge-text" class="style-scope" hidden=""></span>
             </div>
         </button>
-        <div id="interaction" class="circular style-scope yt-icon-button">
-            <div class="stroke style-scope div"></div>
-            <div class="fill style-scope div"></div>
-        </div>
-    </div>
+        <yt-interaction id="interaction" class="circular style-scope yt-icon-button">
+            <div class="stroke style-scope yt-interaction"></div>
+            <div class="fill style-scope yt-interaction"></div>
+        </yt-interaction>
+    </yt-icon-button>
+    <dom-if class="style-scope yt-live-chat-icon-toggle-button-renderer">
+        <template is="dom-if"></template>
+    </dom-if>
+    <tp-yt-paper-tooltip role="tooltip" tabindex="-1" style="inset: 505.013px 0px auto auto">
+        Open AI Chat Assistant
+    </tp-yt-paper-tooltip>
 </div>
