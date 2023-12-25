@@ -34,11 +34,17 @@ export class OpenAIService {
                 body: formData,
             })
         ).pipe(
-            tap((response) => {
-                if (response.status !== 200)
-                    throw new Error('Invalid API key!\nPlease re-enter a new OpenAI API Key.');
+            switchMap((response) => {
+                if (response.ok) return response.json();
+
+                if (response.status === 401)
+                    throw new Error(
+                        'The API key you provided is invalid and OpenAI has rejected it. Please generate a new API key.'
+                    );
+                else response.text().then(text => {throw new Error(`${response.status}: ${text}`)})
+
+                return from([]);
             }),
-            switchMap((response) => response.json()),
             map((response: ISpeechToTextResponse) => {
                 console.debug(
                     'Get %o transcription: %o',
@@ -70,7 +76,7 @@ export class OpenAIService {
             messages: [
                 {
                     role: 'system',
-                    content: `This is a transcription of a live stream that has been converted from speech to text. Please note that some words may be incorrect due to the conversion process, so use your own judgment to figure out what the speaker meant. Ignore any parts of the passage that are repeated, and guess what's missing if necessary. Using ${browserLanguage}, summarize the main idea of the passage. Then, generate ${responseCount} casual and slangy responses in both ${browserLanguage} and ${streamLanguage}, each no longer than 30 tokens. Be careful not to misplace the language in the responses. Responses are strictly required in the following valid json format!! \`\`\` { "summary": "這篇文章的總結",   "responses": [     {       "${streamLanguage}": "これが最初の可能な返信です",       "${browserLanguage}": "這是第一個可能的回覆"     },     {       "${streamLanguage}": "問題ない",       "${browserLanguage}": "沒問題"     },     {       "${streamLanguage}": "草",       "${browserLanguage}": "草"     }   ] } \`\`\``,
+                    content: `This is a transcription of a live stream that has been converted from speech to text. Please note that some words may be incorrect due to the conversion process, so use your own judgment to figure out what the speaker meant. Ignore any parts of the passage that are repeated, and guess what's missing if necessary. Using ${browserLanguage} to summarize the main idea of the passage. Then, generate ${responseCount} casual and slangy responses in both ${browserLanguage} and ${streamLanguage}, each no longer than 30 tokens. Responses are STRICTLY required in the following valid json format. Please note that even though the JSON template below is in zh and ja, you should use the ${browserLanguage} and ${streamLanguage} as mentioned above. Be careful not to misplace the language in the responses. \`\`\` { "summary": "這篇文章的總結",   "responses": [     {       "${streamLanguage}": "これが可能な返信です",       "${browserLanguage}": "這是可能的回覆"     },     {       "${streamLanguage}": "問題ない",       "${browserLanguage}": "沒問題"     },     {       "${streamLanguage}": "草",       "${browserLanguage}": "草"     }   ] } \`\`\``,
                 },
                 { role: 'user', content: speechToText.text },
             ],
