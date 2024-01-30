@@ -59,18 +59,21 @@ import { YoutubeService } from './Services/YoutubeService';
 
     let isOpen = false;
     function setupOpenButton(): void {
-        const openButton = document.getElementById(
-            'AIChatAssistant_openButton'
-        ) as HTMLButtonElement;
-        if (!openButton) return;
+        const openButtons = document.querySelectorAll('#AIChatAssistant_openButton');
+        if (openButtons.length === 0) return;
 
-        openButton.addEventListener('click', () => {
-            UIDisplay(!isOpen);
-        });
+        openButtons.forEach((b) =>
+            b.addEventListener('click', () => {
+                UIDisplay(!isOpen);
+            })
+        );
 
-        // Close our container when emoji panel is clicked
-        const emojiButtons = document.getElementById('picker-buttons')?.querySelector('#emoji');
-        if (emojiButtons) emojiButtons.addEventListener('click', () => UIDisplay(false));
+        // Close our container when other buttons are clicked
+        document
+            .querySelectorAll('#picker-buttons')
+            ?.forEach((pb) =>
+                pb.querySelector('#emoji')?.addEventListener('click', () => UIDisplay(false))
+            );
     }
 
     function UIDisplay(open: boolean): boolean {
